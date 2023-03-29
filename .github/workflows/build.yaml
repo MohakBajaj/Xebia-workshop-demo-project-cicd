@@ -10,6 +10,7 @@ env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   IMAGE_NAME: xebiaworkshopimage
+  ARTIFACT_PATH: target/my-artifact.jar
 
 jobs:
   build-and-push:
@@ -26,6 +27,14 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean package
+
+      - name: Commit artifact
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add ${{ env.ARTIFACT_PATH }}
+          git commit -m "Add built artifact"
+          git push
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
